@@ -57,6 +57,9 @@ const Login = (props) => {
     { value: '', isValid: false }
   );
 
+  const emailInputRef = React.useRef();
+  const passwordInputRef = React.useRef();
+
   // We use this to setFormIsValid only when validity was changed
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
@@ -95,13 +98,21 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    context.onLogin(emailState.value, passwordState.value);
+
+    if (formIsValid) {
+      context.onLogin(emailState.value, passwordState.value);
+    } else if (!emailIsValid) {
+      emailInputRef.current.focus();
+    } else {
+      passwordInputRef.current.focus();
+    }
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
         <Input
+          ref={emailInputRef}
           id="email"
           label="E-Mail"
           type="email"
@@ -110,6 +121,7 @@ const Login = (props) => {
           onChange={emailChangeHandler}
           onBlur={validateEmailHandler} />
         <Input
+          ref={passwordInputRef}
           id="password"
           label="Password"
           type="password"
